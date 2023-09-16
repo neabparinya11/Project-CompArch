@@ -1,0 +1,3 @@
+lsitCommand = {
+    "add" : "000"
+}
