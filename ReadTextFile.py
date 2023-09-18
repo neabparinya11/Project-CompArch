@@ -1,4 +1,4 @@
-
+from Assembler import Assembler
 listRiscV = ["add", "nand", "lw", "sw", "beq", "jalr", "halt", "noop" ]
 
 def ReadTextFile(strFile):
@@ -18,3 +18,6 @@ def ScanToInstruction(list):
         instruction.insert(0, "")
        
     return instruction
+
+doc = Assembler()
+doc.RtypeInstruction()
