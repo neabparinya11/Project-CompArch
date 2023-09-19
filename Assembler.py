@@ -1,6 +1,7 @@
-listRiscV = ["add", "nand", "lw", "sw", "beq", "jalr", "halt", "noop" ]
-listNumber = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-DictRiscV = {
+LISTRISCV = ["add", "nand", "lw", "sw", "beq", "jalr", "halt", "noop" ]
+LISTNUMBER = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+INVERTBIT = { '0' : '1', '1': '0' }
+DICTRISCV = {
             "add": "000",
             "nand": "001",
             "lw": "010",
@@ -10,7 +11,7 @@ DictRiscV = {
             "halt": "110",
             "noop": "111"
         }
-Number = {
+NUMBER = {
     "0" : "000",
     "1" : "001",
     "2" : "010",
@@ -19,6 +20,25 @@ Number = {
     "5" : "101",
     "6" : "110",
     "7" : "111"
+}
+
+LISTHEXANUMBER = {
+    "0000" : "0",
+    "0001" : "1",
+    "0010" : "2",
+    "0011" : "3",
+    "0100" : "4",
+    "0101" : "5",
+    "0110" : "6",
+    "0111" : "7",
+    "1000" : "8",
+    "1001" : "9",
+    "1010" : "A",
+    "1011" : "B",
+    "1100" : "C",
+    "1101" : "D",
+    "1110" : "E",
+    "1111" : "F"
 }
 
 class Assembler:
@@ -35,7 +55,7 @@ class Assembler:
         for char in listStr:
             if char != "":
                 listInstruction.append(char)
-        if listInstruction[0] in listRiscV:
+        if listInstruction[0] in LISTRISCV:
             listInstruction.insert(0 , "")
         if listInstruction[0] != "":
             self.saveLabelAndAddress[listInstruction[0]] = numLine
@@ -66,40 +86,78 @@ class Assembler:
     
     def ItypeInstruction(self, listStr):
         machineCode = ""
-        
-        return machineCode
+        offsetFields = ""
+        if self.isNumber(listStr[4]):
+            offsetFields = NUMBER[listStr[4]]
+        else:
+            offsetFields = format(self.saveLabelAndAddress[listStr[4]], 'b')
+            
+        machineCode = DICTRISCV[listStr[1]] + NUMBER[listStr[2]] + NUMBER[listStr[3]] + offsetFields.zfill(16)
+        return machineCode.zfill(32)
     
     def JtypeInstruction(self, listStr):
         machineCode = ""
-        machineCode = DictRiscV[listStr[1]] + Number[listStr[2]] + Number[listStr[3]] + "0".zfill(16)
+        machineCode = DICTRISCV[listStr[1]] + NUMBER[listStr[2]] + NUMBER[listStr[3]] + "0".zfill(16)
         return machineCode.zfill(32)
     
     def RtypeInstruction(self, listStr):
         machineCode = ""
-        machineCode = DictRiscV[listStr[1]] + Number[listStr[2]] + Number[listStr[3]] + "0".zfill(13) + Number[listStr[4]]
+        machineCode = DICTRISCV[listStr[1]] + NUMBER[listStr[2]] + NUMBER[listStr[3]] + "0".zfill(13) + NUMBER[listStr[4]]
         return machineCode.zfill(32)        
     
     def OtypeInstruction(self, listStr):
         machineCode = ""
-        machineCode = DictRiscV[listStr[1]] + "0".zfill(22)
+        machineCode = DICTRISCV[listStr[1]] + "0".zfill(22)
         return machineCode.zfill(32)
     
     def FillInstruction(self, listStr, line):
         machineCode = ""
         if self.isNumber(listStr[2]):
-            machineCode = format(line, 'b')
+            if int(listStr[2]) >= 0:
+                machineCode = NUMBER[listStr[2]]
+            else:
+                machineCode = self.TwoComplement(int(listStr[2]), 32)
+            # machineCode = bin(listStr[2]) + 1
         else:
             machineCode = format(self.saveLabelAndAddress[listStr[2]], 'b')
         return machineCode.zfill(32)
         
     def isNumber(self, number:str):
         for ch in number:
-            if ch in listNumber:
+            if ch in LISTNUMBER:
                 if ch == '-':
                     continue
                     
                 return True
         return False
+    
+    def TwoComplement(self, numb, bits)->str:
+        s = bin(numb & int("1"*bits, 2))[2:]
+        return s
+    
+    def BinaryToDecimal(self, binary:str):
+        if len(binary) != 32:
+            raise ValueError("The binary string must be 32 bits")
+        if binary[0] == '0':
+            return int(binary, 2)
+        else:
+            result = ""
+            for char in binary:
+                result += INVERTBIT[char]
+            result = int(result, 2) +1
+            return (-1)*result
+    
+    def BinarydecimalToHexadecimal(self, binaryD:str):
+        # return hex(int(binaryD, 2))
+        if len(binaryD) != 32:
+            raise ValueError("The binary string must be 32 bits")
+        if binaryD[0] == '0':
+            return hex(int(binaryD, 2))
+        else:      
+            result = "0x"
+            for i in range(0, 8):
+                result += LISTHEXANUMBER[binaryD[4*i:4*(i+1)]]      
+            return result
     
 class Pair:
     
@@ -112,6 +170,10 @@ Asb = Assembler()
 lstCode = Asb.ReadFileText('TextFile.txt')
 
 for ints in lstCode:
-    print(ints.line, ", ", ints.numbLine)
-    print(Asb.convertInstruction(ints.line, ints.numbLine))
+    covert = Asb.convertInstruction(ints.line, ints.numbLine)
+    binary = Asb.BinaryToDecimal(covert)
+    hexa = Asb.BinarydecimalToHexadecimal(covert)
+    print(covert)
+    print(binary)
+    print(hexa)
     
