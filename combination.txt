@@ -1,0 +1,20 @@
+            lw          0           $1          valN        $1 = memory[input]
+            lw          0           $2          valR        $2 = memory[input]
+            lw          0           $6          AdcbIn      load function
+            lw          0           1           one         load 1
+            jalr        &6          &7                      
+stop        halt
+comInp      sw         5            7            stack        save return address on stack
+            add        4            5            5            increment stack pointer add 5 on stack
+            sw         5            2            stack        save $2 on stack
+            add        4            5            5            increment stack pointer add 5 on stack
+            sw         5            1            stack        save $1 on stack
+            
+valN        .fill       7
+valR        .fill       3
+AdcbIn      .fill       comInp
+one         .fill       1
+neg1        .fill         -1
+subAdr      .fill         sub4n                             contains the address of sub4n
+input       .fill         10                                  input = 10
+stack       .fill    0                      beginning of stack (value is irrelevant)
