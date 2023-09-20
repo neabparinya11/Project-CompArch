@@ -166,14 +166,14 @@ class Pair:
         self.numbLine = numbLine
         
 
-Asb = Assembler()
-lstCode = Asb.ReadFileText('TextFile.txt')
+# Asb = Assembler()
+# lstCode = Asb.ReadFileText('TextFile.txt')
 
-for ints in lstCode:
-    covert = Asb.convertInstruction(ints.line, ints.numbLine)
-    binary = Asb.BinaryToDecimal(covert)
-    hexa = Asb.BinarydecimalToHexadecimal(covert)
-    print(covert)
-    print(binary)
-    print(hexa)
+# for ints in lstCode:
+#     covert = Asb.convertInstruction(ints.line, ints.numbLine)
+#     binary = Asb.BinaryToDecimal(covert)
+#     hexa = Asb.BinarydecimalToHexadecimal(covert)
+#     print(covert)
+#     print(binary)
+#     print(hexa)
     
