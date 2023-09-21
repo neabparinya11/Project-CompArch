@@ -1,3 +1,4 @@
-import ReadTextFile as RTF
+from Simulator import Simulator
 
-print(RTF.ReadTextFile("TextFile.txt"))
+simulator = Simulator()
+
