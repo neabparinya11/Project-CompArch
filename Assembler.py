@@ -74,14 +74,16 @@ class Assembler:
         result = ""
         if listStr[1] in (".fill"):
             result = self.FillInstruction(listStr, numbLine)
-        if listStr[1] in ("add", "nand"):
+        elif listStr[1] in ("add", "nand"):
             result = self.RtypeInstruction(listStr)
-        if listStr[1] in ("jalr"):
+        elif listStr[1] in ("jalr"):
             result = self.JtypeInstruction(listStr)
-        if listStr[1] in ("lw", "sw", "beq"):
+        elif listStr[1] in ("lw", "sw", "beq"):
             result = self.ItypeInstruction(listStr)
-        if listStr[1] in ("noop", "halt"):
+        elif listStr[1] in ("noop", "halt"):
             result = self.OtypeInstruction(listStr)
+        else:
+            raise ValueError("Invalid opcode")
         return result
     
     def ItypeInstruction(self, listStr):
