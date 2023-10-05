@@ -6,14 +6,24 @@
 stop        halt
 comInp      sw         5            7            stack        save return address on stack
             add        4            5            5            increment stack pointer add 5 on stack
-            sw         5            2            stack        save $2 on stack
+            sw         5            2            stack        save r on stack
             add        4            5            5            increment stack pointer add 5 on stack
-            sw         5            1            stack        save $1 on stack
+            sw         5            1            stack        save n on stack
             add        4            5            5            increment stack pointer add 5 on stack
 combiIF     beq        1            2            comRt        if r = 0 or n = r jump comRt
             beq        0            2            comRt        
-comPop      lw         0            6            neg1      
-            add        6            5            5  
+combi-1     lw         0            6            neg1         load -1  
+            add        6            1            neg1         n-
+            lw         0            6            AdcbIn
+            jalr       6            7
+            add        6            5            5             
+            lw         5            1            stack         load n to stack
+            add        6            1            1             n--
+            lw         5            2            stack         load r to stack
+            add        6            2            2             r--
+            
+comPop      lw         0            6            neg1          load -1 
+            add        6            5            5             
             add        6            5            5
             lw         5            7            stack
             jalr       7            0
@@ -21,9 +31,9 @@ comRt       add        4            3            3             return
             
 valN        .fill       7
 valR        .fill       3
-AdcbIn      .fill       comInp
-AdcbRt      .fill       comRt
-AdcbP       .fill       comPop
-one         .fill       1
-neg1        .fill       -1
+AdcbIn      .fill       comInp              combination input
+AdcbRt      .fill       comRt               combination return
+AdcbP       .fill       comPop              combination pop
+one         .fill       1                   
+neg1        .fill       -1                  
 stack       .fill       0                  beginning of stack (value is irrelevant)
