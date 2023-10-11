@@ -50,10 +50,10 @@ class Assembler:
     
     def ScanToInstructions(self, str:str, numLine):
         listStr = str.strip().split('#')
-        listStr = listStr[0].split(" ")
+        listStr = [ input for input in listStr[0].split(" ") if input != '']
         listInstruction = []
         for char in listStr:
-            if char != "":
+            if char != '':
                 listInstruction.append(char)
         if listInstruction[0] in LISTRISCV:
             listInstruction.insert(0 , "")
@@ -90,11 +90,13 @@ class Assembler:
         machineCode = ""
         offsetFields = ""
         if self.isNumber(listStr[4]):
+            print(listStr[4])
+            print(self.isNumber(listStr[4]))
             offsetFields = NUMBER[listStr[4]]
         else:
             if listStr[1] == "beq":
                 target = int(self.saveLabelAndAddress[listStr[4]])
-                compare = (target - pc) - 1
+                compare = (target - pc) -1
                 offsetFields = self.TwoComplement(compare, 16)
             else:
                 offsetFields = format(self.saveLabelAndAddress[listStr[4]], 'b')
@@ -151,10 +153,10 @@ class Assembler:
         for bit in binary:
             two_cop += '1' if bit == '0' else '0'
         
-        return int(two_cop) + 1
+        return int(two_cop, 2) + 1
     
-    def BinaryToDecimal(self, binary:str):
-        if len(binary) != 32:
+    def BinaryToDecimal(self, binary:str, bits):
+        if len(binary) != bits:
             raise ValueError("The binary string must be 32 bits")
         if binary[0] == '0':
             return int(binary, 2)
@@ -184,8 +186,9 @@ class Pair:
         self.numbLine = numbLine
         
 
-Asb = Assembler()
-Asb.ConvertTwoComplementToCecimal(65534, 16)
+# Asb = Assembler()
+# print(Asb.TwoComplement(-2, 16))
+# print(Asb.BinaryToDecimal('1111111111111110', 16))
 # lstCode = Asb.ReadFileText('TextFile.txt')
 
 # for ints in lstCode:
