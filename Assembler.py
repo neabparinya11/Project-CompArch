@@ -41,6 +41,9 @@ LISTHEXANUMBER = {
     "1111" : "F"
 }
 
+RANGEREGISTER = ['0', '1', '2', '3', '4', '5', '6', '7']
+
+import sys
 class Assembler:
     
     saveLabelAndValue = {} # str: "Variable", value: number
@@ -89,9 +92,11 @@ class Assembler:
     def ItypeInstruction(self, listStr, pc):
         machineCode = ""
         offsetFields = ""
+        if self.isNumber(listStr[2]) != True or self.isNumber(listStr[3]) != True:
+            raise ValueError('Invalid register')
+        if self.checkRegister(listStr[2]) != True or self.checkRegister(listStr[3]) != True:
+            raise ValueError('Register out of range')
         if self.isNumber(listStr[4]):
-            print(listStr[4])
-            print(self.isNumber(listStr[4]))
             offsetFields = NUMBER[listStr[4]]
         else:
             if listStr[1] == "beq":
@@ -106,13 +111,23 @@ class Assembler:
     
     def JtypeInstruction(self, listStr):
         machineCode = ""
-        machineCode = DICTRISCV[listStr[1]] + NUMBER[listStr[2]] + NUMBER[listStr[3]] + "0".zfill(16)
-        return machineCode.zfill(32)
+        if self.isNumber(listStr[2]) != True or self.isNumber(listStr[3]) != True:
+            raise ValueError('Invalid register')
+        elif self.checkRegister(listStr[2]) != True or self.checkRegister(listStr[3]) != True:
+            raise ValueError('Register out of range')
+        else:
+            machineCode = DICTRISCV[listStr[1]] + NUMBER[listStr[2]] + NUMBER[listStr[3]] + "0".zfill(16)
+            return machineCode.zfill(32)
     
     def RtypeInstruction(self, listStr):
         machineCode = ""
-        machineCode = DICTRISCV[listStr[1]] + NUMBER[listStr[2]] + NUMBER[listStr[3]] + "0".zfill(13) + NUMBER[listStr[4]]
-        return machineCode.zfill(32)        
+        if self.isNumber(listStr[4]) != True or self.isNumber(listStr[3]) != True or self.isNumber(listStr[2]) != True:
+            raise ValueError('Invalid register')
+        elif self.checkRegister(listStr[4]) != True or self.checkRegister(listStr[3]) != True or self.checkRegister(listStr[2]) != True:
+            raise ValueError('Register out of range')
+        else:
+            machineCode = DICTRISCV[listStr[1]] + NUMBER[listStr[2]] + NUMBER[listStr[3]] + "0".zfill(13) + NUMBER[listStr[4]]
+            return machineCode.zfill(32) 
     
     def OtypeInstruction(self, listStr):
         machineCode = ""
@@ -133,12 +148,14 @@ class Assembler:
         
     def isNumber(self, number:str):
         for ch in number:
+            if ch == '-':
+                continue
             if ch in LISTNUMBER:
-                if ch == '-':
-                    continue
+                continue
+            else:
+                return False
+        return True
                     
-                return True
-        return False
     
     def TwoComplement(self, numb, bits)->str:
         s = bin(numb & int("1"*bits, 2))[2:]
@@ -178,6 +195,12 @@ class Assembler:
             for i in range(0, 8):
                 result += LISTHEXANUMBER[binaryD[4*i:4*(i+1)]]      
             return result
+        
+    def checkRegister(self, register:str):
+        if register in RANGEREGISTER:
+            return True
+        else:
+            return False
     
 class Pair:
     
