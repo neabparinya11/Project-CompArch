@@ -1,4 +1,7 @@
+from Assembler import Assembler
 from Simulator import Simulator
 
-simulator = Simulator()
+asb = Assembler()
+sim = Simulator()
 
+sim.display()

@@ -1,16 +1,19 @@
 import Assembler as Asb
 
 class Simulator:
+ 
 
     def __init__(self):
-        pass
+        self.binMem = self.getMembin()
+        self.mem =  self.BinToDec(self.binMem)
+        self.reg = [0,0,0,0,0,0,0,0]
+        self.pc = 0
         
-    def reset():  # Initialize/reset registers
-        Simulator.reg = [0,0,0,0,0,0,0,0]
+    def reset(self):  # Initialize/reset registers
+        self.reg = [0,0,0,0,0,0,0,0]
 
-    # def update(self): #Updates the value on the registers
 
-    def getMembin():
+    def getMembin(self):
         mem = []
         Assembler = Asb.Assembler()
         lstCode = Assembler.ReadFileText('TextFile.txt')
@@ -20,7 +23,8 @@ class Simulator:
             # mem.append(Assembler.BinaryToDecimal(covert))
         return mem    
     
-    def BinToDec(binMem):
+    
+    def BinToDec(self,binMem):
         Assembler = Asb.Assembler()
         decMem = []
 
@@ -28,80 +32,110 @@ class Simulator:
             decMem.append(Assembler.BinaryToDecimal(i))
         return decMem
     
-    biMem = getMembin()
-    mem = BinToDec(biMem)
-    reg = []
-    stateCount = 0
-    instCount = len(mem)
 
+    def fetch(self):
+        instruction = self.binMem[self.pc]
+        self.pc += 1
+        return instruction
     
 
-    def printState(pc,mem,reg):
+
+    def instType(self, instructions):
+        inst = str(instructions)
+        opcode = inst[7:10]
+        rs = int(inst[10:13],2)
+        rd = int(inst[13:16],2)
+        imm = int(inst[16:32],2)
+        # print(type,rs,rd,imm)
+
+        if opcode == "000":             # ADD
+            if(imm !=0):
+                 self.reg[imm] = self.reg[rs] + self.reg[rd]
+
+        elif opcode == "001":             # NAND
+            if (imm !=0):
+                self.reg[imm] = ~(self.reg[rs] & self.reg[rd])
+        
+        elif opcode == "010":             # LW
+            if (rd != 0):
+                self.reg[rd] = self.mem[self.reg[rs] + imm];
+                
+        elif opcode == "011":             # SW
+                self.mem[self.reg[rs] + imm] = self.reg[rd];
+                
+        elif opcode == "100":             # BEQ
+            if (self.reg[rs] == self.reg[rd]):
+                self.pc += imm
+                
+        elif opcode == "101":             # JARL
+            if (rd != 0):
+                self.reg[rd] = self.pc + 1;
+            self.pc = self.reg[rs] - 1;
+                
+        elif opcode == "110":             # Halt
+            exit
+                
+        elif opcode == "111"    :         # NOOP
+            pass
+
+                
+    def printState(self,pc,mem,reg):
         print("@@@\nstate:")
-        # print("\tpc ", pc)
+        print("\tpc ", pc)
         print("\tmemory:")
         printMemory(mem)
         print("\tregisters:")      
-        # printReg(Pc.reg)
+        printReg(reg)
         print("end state")
+        print(" ")
 
 
-    # def display():
-    #     Sim = Simulator()
-    #     pc = 0
-    #     isHalt = False
-    #     Sim.reset()
-        
-    #     # while คำสั่งยังไม่ halt:
-    #     #     Pc.printState(Pc.mem)
-    #     #     Pc.update()
+    def display(self):
+        Sim = Simulator()
+        self.reset()
+        for i in self.mem:
+            print('memory[',self.mem.index(i),']=',i)
+        print('\t')
+        print('\t')
+        Sim.printState(self.pc,self.mem,self.reg)
 
-    #     for pc in Sim.instCount:
-    #         Sim.printState(pc,Sim.mem,Sim.reg)
-    #         if isHalt:
-    #             break
+        while True:
+            instruction = self.fetch()
+            if instruction == 0:
+                break
+            self.instType(instruction)
+            Sim.printState(self.pc,self.mem,self.reg)
 
-    #         inst = Sim.biMem[pc]
-    #         if len(inst) < 32:
-    #             inst.zfill(32-len(inst))
+        print("machine halted")
+        print("total of ", Sim.stateCount ," instructions executed")
+        print("final state of machine:")
 
-    #         instType = inst[7:10]
-    #         rs = int(inst[10:13],2)
-    #         rd = int(inst[13:16],2)
-    #         imm = int(inst[0:16],2)
-
-    #         match instType:
-    #             case "000":
-    #                 if(imm !=0):
-    #                     Sim.reg[imm] = Sim.reg[rs] + Sim.reg[rd]
-
-
-    #     print("machine halted")
-    #     print("total of ", Sim.stateCount ," instructions executed")
-    #     print("final state of machine:")
+        Sim.printState(self.pc,self.mem,self.reg)
 
 
 
 def printMemory(mem):
+    # print(mem)
     for i in mem:
         print ("\t\tmem[ ",mem.index(i)," ] ",i)
 
 def printReg(reg):
-     for i in reg:
-        print ("\t\treg[ "+reg.index(i)+" ] "+i)
+    # print(reg)
+    for i in range (len(reg)):
+        print ("\t\treg[ ",i," ] ",reg[i])
 
-
-
+# Assembler = Asb.Assembler()
 # mem = "00000000000010100000000000000001"
 # print(mem)
 # instType = mem[7:10]
 # rs = int(mem[10:13],2)
 # rd = int(mem[13:16],2)
-# imm = int(mem[0:16],2)
+# imm = int(mem[16:32],2)
 # print(instType,rs,rd,imm)
 
-# Simulator = Simulator()
-# print (Simulator.biMem)
+
+
+# Simulator.display()
 # Pc.printState(Pc.mem)
 # Simulator.reset()
 # print (Simulator.reg)
