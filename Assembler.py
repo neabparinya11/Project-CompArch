@@ -79,20 +79,25 @@ class Assembler:
         elif listStr[1] in ("jalr"):
             result = self.JtypeInstruction(listStr)
         elif listStr[1] in ("lw", "sw", "beq"):
-            result = self.ItypeInstruction(listStr)
+            result = self.ItypeInstruction(listStr, numbLine)
         elif listStr[1] in ("noop", "halt"):
             result = self.OtypeInstruction(listStr)
         else:
             raise ValueError("Invalid opcode")
         return result
     
-    def ItypeInstruction(self, listStr):
+    def ItypeInstruction(self, listStr, pc):
         machineCode = ""
         offsetFields = ""
         if self.isNumber(listStr[4]):
             offsetFields = NUMBER[listStr[4]]
         else:
-            offsetFields = format(self.saveLabelAndAddress[listStr[4]], 'b')
+            if listStr[1] == "beq":
+                target = int(self.saveLabelAndAddress[listStr[4]])
+                compare = (target - pc) - 1
+                offsetFields = self.TwoComplement(compare, 16)
+            else:
+                offsetFields = format(self.saveLabelAndAddress[listStr[4]], 'b')
             
         machineCode = DICTRISCV[listStr[1]] + NUMBER[listStr[2]] + NUMBER[listStr[3]] + offsetFields.zfill(16)
         return machineCode.zfill(32)
