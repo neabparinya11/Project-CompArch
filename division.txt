@@ -1,0 +1,37 @@
+  lw  a2, mplier   # Load mplier into register a2
+  lw  a3, mcand    # Load mcand into register a3
+  lw  a4, maskb    # Load maskb into register a4
+  lw  a5, maxbit   # Load maxbit into register a5
+  li  a6, 0        # Initialize quotient (result) in a6
+  li  a7, 0        # Initialize a temporary register in a7
+
+loop:
+  nor a7, a4, x0   # Extract one bit using bit masking (bit 0 equals 1 because of NOR)
+  beq a7, x0, proc  # If bit 0 equals 0, go to proc
+
+calc:
+  add a6, a6, a3   # Add mcand (left shifted) for binary multiplication
+
+proc:
+  li a7, -1        # Load negative 1 value into a7 (temporary reg)
+  addi a5, a5, -1  # Subtract 1 from maxbit whenever a bit operation loop executes
+  beq a5, x0, done # Halt the machine if maxbit equals 0
+  slli a3, a3, 1   # Left bit shift by adding a register to itself
+  slli a4, a4, 1   # Left bit shift for maskbit
+  li a7, 1         # Load positive 1 value into a7 (temporary reg)
+  addi a4, a4, 1   # Add 1 to left shifted maskbit
+  j loop           # Continue the loop
+
+done:
+        ecall            # Halt the machine
+
+        .data
+mcand:   .fill   32766   # Fill mcand
+mplier:  .fill   10383   # Fill mplier
+maskb:   .fill   -2      # Fill maskbit
+add1:    .fill   1       # Fill add1
+sub1:    .fill   -1      # Fill sub1
+maxbit:  .fill   15      # Fill maxbit
+
+
+
