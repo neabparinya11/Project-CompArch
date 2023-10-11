@@ -2,7 +2,9 @@ import Assembler as Asb
 
 class Simulator:
  
-
+    run = True
+    stateCount = 0
+    
     def __init__(self):
         self.binMem = self.getMembin()
         self.mem =  self.BinToDec(self.binMem)
@@ -16,7 +18,7 @@ class Simulator:
     def getMembin(self):
         mem = []
         Assembler = Asb.Assembler()
-        lstCode = Assembler.ReadFileText('TextFile.txt')
+        lstCode = Assembler.ReadFileText('combination.txt')
 
         for ints in lstCode:
             mem.append(Assembler.convertInstruction(ints.line, ints.numbLine))
@@ -29,13 +31,14 @@ class Simulator:
         decMem = []
 
         for i in binMem:
-            decMem.append(Assembler.BinaryToDecimal(i))
+            decMem.append(Assembler.BinaryToDecimal(i, 32))
         return decMem
     
 
     def fetch(self):
         instruction = self.binMem[self.pc]
         self.pc += 1
+        self.stateCount += 1
         return instruction
     
 
@@ -65,7 +68,8 @@ class Simulator:
                 
         elif opcode == "100":             # BEQ
             if (self.reg[rs] == self.reg[rd]):
-                self.pc += imm
+                asb = Asb.Assembler()
+                self.pc += asb.BinaryToDecimal('{0:b}'.format(imm).zfill(16), 16)
                 
         elif opcode == "101":             # JARL
             if (rd != 0):
@@ -73,7 +77,11 @@ class Simulator:
             self.pc = self.reg[rs] - 1;
                 
         elif opcode == "110":             # Halt
-            exit
+            # exit
+            self.run = False
+            print("machine halted")
+            print("total of ", self.stateCount ," instructions executed")
+            print("final state of machine:", self.pc)
                 
         elif opcode == "111"    :         # NOOP
             pass
@@ -99,18 +107,18 @@ class Simulator:
         print('\t')
         Sim.printState(self.pc,self.mem,self.reg)
 
-        while True:
+        while self.run:
             instruction = self.fetch()
             if instruction == 0:
                 break
             self.instType(instruction)
             Sim.printState(self.pc,self.mem,self.reg)
 
-        print("machine halted")
-        print("total of ", Sim.stateCount ," instructions executed")
-        print("final state of machine:")
+        # print("machine halted")
+        # print("total of ", Sim.stateCount ," instructions executed")
+        # print("final state of machine:")
 
-        Sim.printState(self.pc,self.mem,self.reg)
+        # Sim.printState(self.pc,self.mem,self.reg)
 
 
 

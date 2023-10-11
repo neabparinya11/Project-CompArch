@@ -142,6 +142,17 @@ class Assembler:
         s = bin(numb & int("1"*bits, 2))[2:]
         return s
     
+    def ConvertTwoComplementToCecimal(self, numb:int, bits:int):
+        binary = '{0:b}'.format(numb)
+        two_cop = ''
+        if len(binary) != bits:
+            raise ValueError('Bits carrier')
+        # flip bit
+        for bit in binary:
+            two_cop += '1' if bit == '0' else '0'
+        
+        return int(two_cop) + 1
+    
     def BinaryToDecimal(self, binary:str):
         if len(binary) != 32:
             raise ValueError("The binary string must be 32 bits")
@@ -173,7 +184,8 @@ class Pair:
         self.numbLine = numbLine
         
 
-# Asb = Assembler()
+Asb = Assembler()
+Asb.ConvertTwoComplementToCecimal(65534, 16)
 # lstCode = Asb.ReadFileText('TextFile.txt')
 
 # for ints in lstCode:
