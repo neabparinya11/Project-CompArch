@@ -58,6 +58,8 @@ class Assembler:
         for char in listStr:
             if char != '':
                 listInstruction.append(char)
+        if listInstruction == []:
+            return []
         if listInstruction[0] in LISTRISCV:
             listInstruction.insert(0 , "")
         if listInstruction[0] != "":
@@ -69,8 +71,11 @@ class Assembler:
         count = 0
         with open(str) as f:
             for line in f:
-                instruction.append(Pair(self.ScanToInstructions(line, count), count))
-                count+=1
+                if self.ScanToInstructions(line, count) == []:
+                    continue
+                else:
+                    instruction.append(Pair(self.ScanToInstructions(line, count), count))
+                    count+=1
         return instruction
     
     def convertInstruction(self, listStr, numbLine): 

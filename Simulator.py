@@ -18,7 +18,7 @@ class Simulator:
     def getMembin(self):
         mem = []
         Assembler = Asb.Assembler()
-        lstCode = Assembler.ReadFileText('combination.txt')
+        lstCode = Assembler.ReadFileText('TextFile.txt')
 
         for ints in lstCode:
             mem.append(Assembler.convertInstruction(ints.line, ints.numbLine))
