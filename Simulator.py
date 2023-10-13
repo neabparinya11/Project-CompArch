@@ -81,8 +81,8 @@ class Simulator:
                 
         elif opcode == "101":             # JARL
             if (rd != 0):
-                self.reg[rd] = self.pc + 1;
-            self.pc = self.reg[rs] - 1;
+                self.reg[rd] = self.pc;
+            self.pc = self.reg[rs] ;
                 
         elif opcode == "110":             # Halt
             # exit
