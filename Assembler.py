@@ -60,10 +60,12 @@ class Assembler:
                 listInstruction.append(char)
         if listInstruction == []:
             return []
+        print(listInstruction)
         if listInstruction[0] in LISTRISCV:
             listInstruction.insert(0 , "")
         if listInstruction[0] != "":
             self.saveLabelAndAddress[listInstruction[0]] = numLine
+            
         return listInstruction
     
     def ReadFileText(self, str):
@@ -76,6 +78,7 @@ class Assembler:
                 else:
                     instruction.append(Pair(self.ScanToInstructions(line, count), count))
                     count+=1
+            f.close()
         return instruction
     
     def convertInstruction(self, listStr, numbLine): 
@@ -91,7 +94,8 @@ class Assembler:
         elif listStr[1] in ("noop", "halt"):
             result = self.OtypeInstruction(listStr)
         else:
-            raise ValueError("Invalid opcode")
+            raise ValueError("Invalid opcode "+ listStr[1]+ " not have")
+            
         return result
     
     def ItypeInstruction(self, listStr, pc):
@@ -143,7 +147,7 @@ class Assembler:
         machineCode = ""
         if self.isNumber(listStr[2]):
             if int(listStr[2]) >= 0:
-                machineCode = NUMBER[listStr[2]]
+                machineCode ='{0:b}'.format(int(listStr[2]))
             else:
                 machineCode = self.TwoComplement(int(listStr[2]), 32)
             # machineCode = bin(listStr[2]) + 1
