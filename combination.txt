@@ -13,7 +13,7 @@ comInp      sw         5            7            stack        #save return addre
 combiIF     beq        1            2            comRt        #if r = 0 or n = r jump comRt
             beq        0            2            comRt        
 combi-1     lw         0            6            neg1         #load -1  
-            add        6            1            neg1         #n-
+            add        6            1            6            #n-
             lw         0            6            AdcbIn
             jalr       6            7
             add        6            5            5             
