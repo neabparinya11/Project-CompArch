@@ -60,7 +60,6 @@ class Assembler:
                 listInstruction.append(char)
         if listInstruction == []:
             return []
-        print(listInstruction)
         if listInstruction[0] in LISTRISCV:
             listInstruction.insert(0 , "")
         if listInstruction[0] != "":
