@@ -39,13 +39,15 @@ class Simulator:
         return instruction
     
 
-
     def instType(self, instructions):
         inst = str(instructions)
         opcode = inst[7:10]
         rs = int(inst[10:13],2)
         rd = int(inst[13:16],2)
         imm = int(inst[16:32],2)
+        
+        
+
         # print(type,rs,rd,imm)
 
         if opcode == "000":             # ADD
