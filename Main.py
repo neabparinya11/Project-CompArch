@@ -1,3 +1,8 @@
-import ReadTextFile as RTF
+from Assembler import Assembler
+from Simulator import Simulator
 
-print(RTF.ReadTextFile("TextFile.txt"))
+asb = Assembler()
+sim = Simulator()
+
+sim.display()
+sim.output()

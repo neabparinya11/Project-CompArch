@@ -1,7 +1,7 @@
             lw          0           1          valN             #load n
             lw          0           2          valR             #load r
             lw          0           6          AdcbIn           #load function
-            lw          0           1          one              #load 1
+            lw          0           4          one              #load 1
             jalr        6           7                      
 stop        halt
 comInp      sw         5            7            stack          #save return address on stack
