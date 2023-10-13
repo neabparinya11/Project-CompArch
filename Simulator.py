@@ -3,6 +3,7 @@ import Assembler as Asb
 class Simulator:
  
     run = True
+    max_StateCount = 500
     stateCount = 0
     
     def __init__(self):
@@ -36,11 +37,18 @@ class Simulator:
     
 
     def fetch(self):
+        self.errorDetect()
         instruction = self.binMem[self.pc]
         self.pc += 1
         self.stateCount += 1
         return instruction
     
+    def errorDetect(self):          # detect infinite loop or address -1
+        if self.stateCount >= self.max_StateCount - 1:
+            raise Exception('Infinite loop detected!')
+        if self.pc <= -1:
+            raise Exception('Address cannot be less than 0!')
+        
 
     def instType(self, instructions):
         inst = str(instructions)
@@ -86,6 +94,7 @@ class Simulator:
         elif opcode == "111"    :         # NOOP
             pass
 
+        
                 
     def printState(self,pc,mem,reg):
         print("@@@\nstate:")
