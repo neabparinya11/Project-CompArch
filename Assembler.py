@@ -41,6 +41,9 @@ LISTHEXANUMBER = {
     "1111" : "F"
 }
 
+RANGEREGISTER = ['0', '1', '2', '3', '4', '5', '6', '7']
+
+import sys
 class Assembler:
     
     saveLabelAndValue = {} # str: "Variable", value: number
@@ -50,11 +53,13 @@ class Assembler:
     
     def ScanToInstructions(self, str:str, numLine):
         listStr = str.strip().split('#')
-        listStr = listStr[0].split(" ")
+        listStr = [ input for input in listStr[0].split(" ") if input != '']
         listInstruction = []
         for char in listStr:
-            if char != "":
+            if char != '':
                 listInstruction.append(char)
+        if listInstruction == []:
+            return []
         if listInstruction[0] in LISTRISCV:
             listInstruction.insert(0 , "")
         if listInstruction[0] != "":
@@ -66,8 +71,11 @@ class Assembler:
         count = 0
         with open(str) as f:
             for line in f:
-                instruction.append(Pair(self.ScanToInstructions(line, count), count))
-                count+=1
+                if self.ScanToInstructions(line, count) == []:
+                    continue
+                else:
+                    instruction.append(Pair(self.ScanToInstructions(line, count), count))
+                    count+=1
         return instruction
     
     def convertInstruction(self, listStr, numbLine): 
@@ -89,12 +97,16 @@ class Assembler:
     def ItypeInstruction(self, listStr, pc):
         machineCode = ""
         offsetFields = ""
+        if self.isNumber(listStr[2]) != True or self.isNumber(listStr[3]) != True:
+            raise ValueError('Invalid register')
+        if self.checkRegister(listStr[2]) != True or self.checkRegister(listStr[3]) != True:
+            raise ValueError('Register out of range')
         if self.isNumber(listStr[4]):
             offsetFields = NUMBER[listStr[4]]
         else:
             if listStr[1] == "beq":
                 target = int(self.saveLabelAndAddress[listStr[4]])
-                compare = (target - pc) - 1
+                compare = (target - pc) -1
                 offsetFields = self.TwoComplement(compare, 16)
             else:
                 offsetFields = format(self.saveLabelAndAddress[listStr[4]], 'b')
@@ -104,13 +116,23 @@ class Assembler:
     
     def JtypeInstruction(self, listStr):
         machineCode = ""
-        machineCode = DICTRISCV[listStr[1]] + NUMBER[listStr[2]] + NUMBER[listStr[3]] + "0".zfill(16)
-        return machineCode.zfill(32)
+        if self.isNumber(listStr[2]) != True or self.isNumber(listStr[3]) != True:
+            raise ValueError('Invalid register')
+        elif self.checkRegister(listStr[2]) != True or self.checkRegister(listStr[3]) != True:
+            raise ValueError('Register out of range')
+        else:
+            machineCode = DICTRISCV[listStr[1]] + NUMBER[listStr[2]] + NUMBER[listStr[3]] + "0".zfill(16)
+            return machineCode.zfill(32)
     
     def RtypeInstruction(self, listStr):
         machineCode = ""
-        machineCode = DICTRISCV[listStr[1]] + NUMBER[listStr[2]] + NUMBER[listStr[3]] + "0".zfill(13) + NUMBER[listStr[4]]
-        return machineCode.zfill(32)        
+        if self.isNumber(listStr[4]) != True or self.isNumber(listStr[3]) != True or self.isNumber(listStr[2]) != True:
+            raise ValueError('Invalid register')
+        elif self.checkRegister(listStr[4]) != True or self.checkRegister(listStr[3]) != True or self.checkRegister(listStr[2]) != True:
+            raise ValueError('Register out of range')
+        else:
+            machineCode = DICTRISCV[listStr[1]] + NUMBER[listStr[2]] + NUMBER[listStr[3]] + "0".zfill(13) + NUMBER[listStr[4]]
+            return machineCode.zfill(32) 
     
     def OtypeInstruction(self, listStr):
         machineCode = ""
@@ -131,19 +153,32 @@ class Assembler:
         
     def isNumber(self, number:str):
         for ch in number:
+            if ch == '-':
+                continue
             if ch in LISTNUMBER:
-                if ch == '-':
-                    continue
+                continue
+            else:
+                return False
+        return True
                     
-                return True
-        return False
     
     def TwoComplement(self, numb, bits)->str:
         s = bin(numb & int("1"*bits, 2))[2:]
         return s
     
-    def BinaryToDecimal(self, binary:str):
-        if len(binary) != 32:
+    def ConvertTwoComplementToCecimal(self, numb:int, bits:int):
+        binary = '{0:b}'.format(numb)
+        two_cop = ''
+        if len(binary) != bits:
+            raise ValueError('Bits carrier')
+        # flip bit
+        for bit in binary:
+            two_cop += '1' if bit == '0' else '0'
+        
+        return int(two_cop, 2) + 1
+    
+    def BinaryToDecimal(self, binary:str, bits):
+        if len(binary) != bits:
             raise ValueError("The binary string must be 32 bits")
         if binary[0] == '0':
             return int(binary, 2)
@@ -165,6 +200,12 @@ class Assembler:
             for i in range(0, 8):
                 result += LISTHEXANUMBER[binaryD[4*i:4*(i+1)]]      
             return result
+        
+    def checkRegister(self, register:str):
+        if register in RANGEREGISTER:
+            return True
+        else:
+            return False
     
 class Pair:
     
@@ -174,6 +215,8 @@ class Pair:
         
 
 # Asb = Assembler()
+# print(Asb.TwoComplement(-2, 16))
+# print(Asb.BinaryToDecimal('1111111111111110', 16))
 # lstCode = Asb.ReadFileText('TextFile.txt')
 
 # for ints in lstCode:
