@@ -5,3 +5,4 @@ asb = Assembler()
 sim = Simulator()
 
 sim.display()
+sim.output()

@@ -18,7 +18,7 @@ class Simulator:
     def getMembin(self):
         mem = []
         Assembler = Asb.Assembler()
-        lstCode = Assembler.ReadFileText('TextFile.txt')
+        lstCode = Assembler.ReadFileText('textFile.txt')
 
         for ints in lstCode:
             mem.append(Assembler.convertInstruction(ints.line, ints.numbLine))
@@ -47,9 +47,7 @@ class Simulator:
         opcode = inst[7:10]
         rs = int(inst[10:13],2)
         rd = int(inst[13:16],2)
-        imm = int(inst[16:32],2)
-        
-        
+        imm = int(inst[16:32],2)        
 
         # print(type,rs,rd,imm)
 
@@ -99,6 +97,8 @@ class Simulator:
         print("end state")
         print(" ")
 
+    def output(self):
+        print('The output of this program is :', self.reg[3])
 
     def display(self):
         Sim = Simulator()
@@ -119,9 +119,7 @@ class Simulator:
         # print("machine halted")
         # print("total of ", Sim.stateCount ," instructions executed")
         # print("final state of machine:")
-
         # Sim.printState(self.pc,self.mem,self.reg)
-
 
 
 def printMemory(mem):
@@ -134,21 +132,6 @@ def printReg(reg):
     for i in range (len(reg)):
         print ("\t\treg[ ",i," ] ",reg[i])
 
-# Assembler = Asb.Assembler()
-# mem = "00000000000010100000000000000001"
-# print(mem)
-# instType = mem[7:10]
-# rs = int(mem[10:13],2)
-# rd = int(mem[13:16],2)
-# imm = int(mem[16:32],2)
-# print(instType,rs,rd,imm)
-
-
-
-# Simulator.display()
-# Pc.printState(Pc.mem)
-# Simulator.reset()
-# print (Simulator.reg)
 
 
 
