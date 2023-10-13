@@ -133,8 +133,10 @@ class Simulator:
 
 def printMemory(mem):
     # print(mem)
+    memCount = 0
     for i in mem:
-        print ("\t\tmem[ ",mem.index(i)," ] ",i)
+        print ("\t\tmem[ ",memCount," ] ",i)
+        memCount +=1
 
 def printReg(reg):
     # print(reg)
