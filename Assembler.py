@@ -60,12 +60,10 @@ class Assembler:
                 listInstruction.append(char)
         if listInstruction == []:
             return []
-        print(listInstruction)
         if listInstruction[0] in LISTRISCV:
             listInstruction.insert(0 , "")
         if listInstruction[0] != "":
             self.saveLabelAndAddress[listInstruction[0]] = numLine
-            
         return listInstruction
     
     def ReadFileText(self, str):
@@ -81,10 +79,10 @@ class Assembler:
             f.close()
         return instruction
     
-    def convertInstruction(self, listStr, numbLine): 
+    def convertInstruction(self, listStr, numbLine):
         result = ""
         if listStr[1] in (".fill"):
-            result = self.FillInstruction(listStr, numbLine)
+            result = self.FillInstruction(listStr)
         elif listStr[1] in ("add", "nand"):
             result = self.RtypeInstruction(listStr)
         elif listStr[1] in ("jalr"):
@@ -101,39 +99,61 @@ class Assembler:
     def ItypeInstruction(self, listStr, pc):
         machineCode = ""
         offsetFields = ""
+        
         if self.isNumber(listStr[2]) != True or self.isNumber(listStr[3]) != True:
             raise ValueError('Invalid register')
+        
         if self.checkRegister(listStr[2]) != True or self.checkRegister(listStr[3]) != True:
             raise ValueError('Register out of range')
+        
         if self.isNumber(listStr[4]):
-            offsetFields = NUMBER[listStr[4]]
+            address = int(listStr[4])
+            
+            if address > 32767 or address < -32768:
+                raise ValueError('Offset out of bound')
+            
+            if listStr[1] == "beq":
+                offsetFields = self.TwoComplementV2(address, 16)
+            else:
+                offsetFields = '{0:b}'.format(int(listStr[4]))
         else:
             if listStr[1] == "beq":
                 target = int(self.saveLabelAndAddress[listStr[4]])
                 compare = (target - pc) -1
-                offsetFields = self.TwoComplement(compare, 16)
+                
+                if compare > 32767 or compare < -32768:
+                    raise ValueError('Offset out of bound')
+                
+                offsetFields = self.TwoComplementV2(compare, 16)
             else:
-                offsetFields = format(self.saveLabelAndAddress[listStr[4]], 'b')
+                pc_int = self.saveLabelAndAddress[listStr[4]]
+                offsetFields = self.TwoComplementV2(pc_int, 16)
             
         machineCode = DICTRISCV[listStr[1]] + NUMBER[listStr[2]] + NUMBER[listStr[3]] + offsetFields.zfill(16)
         return machineCode.zfill(32)
     
     def JtypeInstruction(self, listStr):
         machineCode = ""
+        
         if self.isNumber(listStr[2]) != True or self.isNumber(listStr[3]) != True:
             raise ValueError('Invalid register')
+        
         elif self.checkRegister(listStr[2]) != True or self.checkRegister(listStr[3]) != True:
             raise ValueError('Register out of range')
+        
         else:
             machineCode = DICTRISCV[listStr[1]] + NUMBER[listStr[2]] + NUMBER[listStr[3]] + "0".zfill(16)
             return machineCode.zfill(32)
     
     def RtypeInstruction(self, listStr):
         machineCode = ""
+        
         if self.isNumber(listStr[4]) != True or self.isNumber(listStr[3]) != True or self.isNumber(listStr[2]) != True:
             raise ValueError('Invalid register')
+        
         elif self.checkRegister(listStr[4]) != True or self.checkRegister(listStr[3]) != True or self.checkRegister(listStr[2]) != True:
             raise ValueError('Register out of range')
+        
         else:
             machineCode = DICTRISCV[listStr[1]] + NUMBER[listStr[2]] + NUMBER[listStr[3]] + "0".zfill(13) + NUMBER[listStr[4]]
             return machineCode.zfill(32) 
@@ -143,47 +163,57 @@ class Assembler:
         machineCode = DICTRISCV[listStr[1]] + "0".zfill(22)
         return machineCode.zfill(32)
     
-    def FillInstruction(self, listStr, line):
+    def FillInstruction(self, listStr):
         machineCode = ""
+        
         if self.isNumber(listStr[2]):
             if int(listStr[2]) >= 0:
                 machineCode ='{0:b}'.format(int(listStr[2]))
             else:
-                machineCode = self.TwoComplement(int(listStr[2]), 32)
-            # machineCode = bin(listStr[2]) + 1
+                print
+                machineCode = self.TwoComplementV2(int(listStr[2]), 32)
+                # machineCode = listStr[2]
         else:
-            machineCode = format(self.saveLabelAndAddress[listStr[2]], 'b')
+            machineCode = '{0:b}'.format(self.saveLabelAndAddress[listStr[2]])
         return machineCode.zfill(32)
         
     def isNumber(self, number:str):
         for ch in number:
-            if ch == '-':
+            if ch == '-' and number.index(ch) == 0:
                 continue
             if ch in LISTNUMBER:
                 continue
             else:
                 return False
+            
         return True
                     
-    
-    def TwoComplement(self, numb, bits)->str:
-        s = bin(numb & int("1"*bits, 2))[2:]
-        return s
-    
-    def ConvertTwoComplementToCecimal(self, numb:int, bits:int):
-        binary = '{0:b}'.format(numb)
-        two_cop = ''
-        if len(binary) != bits:
-            raise ValueError('Bits carrier')
-        # flip bit
-        for bit in binary:
-            two_cop += '1' if bit == '0' else '0'
+    def TwoComplementV2(self, numb:int, bits:int):
+        return bin(numb & int("1"*bits, 2))[2:]
         
-        return int(two_cop, 2) + 1
+    def TwoComplement(self, numb:int, bits)->str:
+        s = '{0:b}'.format(numb).zfill(bits)
+        flip_bits = ''
+        for ch in s:
+            if ch == '1':
+                flip_bits += '0'
+            elif ch == '0':
+                flip_bits += '1'
+            elif ch == '-':
+                flip_bits += '1'
+        add1 = int(flip_bits, 2) + 1
+        return '{0:b}'.format(add1)
     
-    def BinaryToDecimal(self, binary:str, bits):
+    def ConvertTwoComplementToCecimal(self, numb:int, bits:int)->int:
+        two_complement = self.TwoComplement(numb, bits)
+        if two_complement[0] == '1':
+            return int(two_complement[1:bits], 2)*(-1)
+        else:
+            return int(two_complement, 2)
+    
+    def BinaryToDecimal(self, binary:str, bits:int):
         if len(binary) != bits:
-            raise ValueError("The binary string must be 32 bits")
+            raise ValueError("The binary string must be "+ str(bits) + "bits")
         if binary[0] == '0':
             return int(binary, 2)
         else:
@@ -211,23 +241,23 @@ class Assembler:
         else:
             return False
     
+    
 class Pair:
     
     def __init__(self, line, numbLine):
         self.line = line
         self.numbLine = numbLine
         
-
 # Asb = Assembler()
-# print(Asb.TwoComplement(-2, 16))
-# print(Asb.BinaryToDecimal('1111111111111110', 16))
-# lstCode = Asb.ReadFileText('TextFile.txt')
-
+# two = Asb.TwoComplementV2(4294705152, 32)
+# print(int(two, 2))
+# one = Asb.TwoComplementV2(int(two, 2), 32)
+# print(Asb.ConvertTwoComplementToCecimal(int(one, 2), 32))
+# one = Asb.ConvertTwoComplementToCecimal(int(two, 2), 16)
+# print(one)
+# lstCode = Asb.ReadFileText('multi.txt')
 # for ints in lstCode:
 #     covert = Asb.convertInstruction(ints.line, ints.numbLine)
-#     binary = Asb.BinaryToDecimal(covert)
-#     hexa = Asb.BinarydecimalToHexadecimal(covert)
 #     print(covert)
-#     print(binary)
-#     print(hexa)
-    
+# print(Asb.saveLabelAndAddress)
+# print(Asb.saveLabelAndValue)
