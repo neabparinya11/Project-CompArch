@@ -2,7 +2,7 @@
             lw          0           2          valR         #load r
             lw          0           6          AdcbIn       #load combination on reg 6
             lw          0           4           one         #load 1
-            jalr        6           7                      
+            jalr        6           7                       #go to function
 stop        halt
 comInp      sw         5            7            stack        #save return address on stack
             add        4            5            5            #increment stack pointer add 5 on stack
@@ -10,16 +10,16 @@ comInp      sw         5            7            stack        #save return addre
             add        4            5            5            #increment stack pointer add 5 on stack
             sw         5            1            stack        #save n on stack
             add        4            5            5            #increment stack pointer add 5 on stack
-combiIF     beq        1            2            comRt        #if r = 0 or n = r jump comRt
-            beq        0            2            comRt        
+combiIF     beq        1            2            comRt        #if r = 0 jump comRt
+            beq        0            2            comRt        #if n = r jump comRt
 combi-1     lw         0            6            neg1         #load -1  
-            add        6            1            1            #n-
+            add        6            1            1            #n--
             lw         0            6            AdcbIn
-            jalr       6            7
-            add        6            5            5             
+            jalr       6            7                          #goes back to comIni
+            add        6            5            5             # pop to get n
             lw         5            1            stack         #load n to stack
             add        6            1            1             #n--
-            add        6            5            5
+            add        6            5            5             # pop to get r
             lw         5            2            stack         #load r to stack
             add        6            2            2             #r--
             lw         0            6            AdcbIn
@@ -28,9 +28,9 @@ combi-1     lw         0            6            neg1         #load -1
             jalr       6            7
             lw         0            6            AdcbP
             jalr       6            7
-comRt       add        4            3            3             #return            
+comRt       add        4            3            3             #return  reg3 += 1        
 comPop      lw         0            6            neg1          #load -1 
-            add        6            5            5             
+            add        6            5            5             # pop all
             add        6            5            5
             add        6            5            5
             lw         5            7            stack
