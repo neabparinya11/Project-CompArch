@@ -1,29 +1,32 @@
-        lw 1 2 mplier   # Load mplier into register 1
-        lw 1 3 mcand    # Load mcand into register 1
-        lw 1 4 maskb    # Load maskb into register 1
-        lw 1 5 maxbit   # Load maxbit into register 1 
+        lw 0 2 mplier   # Load mplier into register 0
+        lw 0 3 mcand    # Load mcand into register 0
+        lw 0 4 maskb    # Load maskb into register 0
+        lw 0 5 maxbit   # Load maxbit into register 0 
         noop            # === logic divider ===
         beq 1 0 loop
-loop    nor 2 4 7       # Extract one bit using bit masking (bit 0 equals 1 because of NOR)
-        beq 1 7 calc    # If bit 0 equals 1, go to calc
-        beq 1 0 proc    # If bit 0 equals 0, go to proc
+loop    nand 2 2 2    # Set bit 0 to 1 (use the correct register)
+        nand 6 4 4    # Set bit 1 to 0 (use the correct register)
+        nand 7 2 2    # Set bit 2 to the inverse of bit 0
+        nand 7 7 7    # Set bit 3 to the inverse of bit 1
+        beq 1 7 calc   # If bit 0 equals 1, go to calc
+        beq 1 0 proc   # If bit 0 equals 0, go to proc
 calc    add 1 3 1       # Add mcand (left shifted) for binary multiplication
-proc    lw 1 7 sub1     # Load negative 1 value into reg7 (temporary reg)
+proc    lw 0 7 sub1     # Load negative 1 value into reg7 (temporary reg)
         add 5 7 5       # Subtract 1 from max bit whenever a bit operation loop executes
         beq 1 5 done    # Halt the machine if max bit equals 0
         add 3 3 3       # left bit shift by adding a register to itself
         add 4 4 4       # Left bit shift for maskbit
-        lw 1 7 add1     # Load positive 1 value into reg7 (temporary reg)
+        lw 0 7 add1     # Load positive 1 value into reg7 (temporary reg)
         add 4 7 4       # Add 1 to left shifted maskbit
         beq 1 0 loop    # Continue the loop
 done    noop            # === logic divider ===
         halt
-mcand   .fill   32766   # Fill mcand
-mplier  .fill   10383   # Fill mplier
+mcand   .fill   3   # Fill mcand
+mplier  .fill   3   # Fill mplier
 maskb   .fill   -2      # Fill maskbit
 add1    .fill   1       # Fill add1
 sub1    .fill   -1      # Fill sub1
-maxbit  .fill   15      # Fill maxbit
+maxbit  .fill   15     # Fill maxbit
 
 
 
