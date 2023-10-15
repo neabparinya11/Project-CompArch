@@ -170,7 +170,8 @@ class Assembler:
             if int(listStr[2]) >= 0:
                 machineCode ='{0:b}'.format(int(listStr[2]))
             else:
-                machineCode = self.TwoComplementV2(int(listStr), 32)
+                print
+                machineCode = self.TwoComplementV2(int(listStr[2]), 32)
                 # machineCode = listStr[2]
         else:
             machineCode = '{0:b}'.format(self.saveLabelAndAddress[listStr[2]])
@@ -247,11 +248,11 @@ class Pair:
         self.line = line
         self.numbLine = numbLine
         
-Asb = Assembler()
-two = Asb.TwoComplementV2(4294705152, 32)
-print(int(two, 2))
-one = Asb.TwoComplementV2(int(two, 2), 32)
-print(Asb.ConvertTwoComplementToCecimal(int(one, 2), 32))
+# Asb = Assembler()
+# two = Asb.TwoComplementV2(4294705152, 32)
+# print(int(two, 2))
+# one = Asb.TwoComplementV2(int(two, 2), 32)
+# print(Asb.ConvertTwoComplementToCecimal(int(one, 2), 32))
 # one = Asb.ConvertTwoComplementToCecimal(int(two, 2), 16)
 # print(one)
 # lstCode = Asb.ReadFileText('multi.txt')
