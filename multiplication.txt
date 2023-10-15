@@ -22,11 +22,11 @@ proc    lw 0 7 sub1     # Load negative 1 value into reg7 (temporary reg)
 done    noop            # === logic divider ===
         halt
 mcand   .fill   3   # Fill mcand
-mplier  .fill   3   # Fill mplier
+mplier  .fill   2   # Fill mplier
 maskb   .fill   -2      # Fill maskbit
 add1    .fill   1       # Fill add1
 sub1    .fill   -1      # Fill sub1
-maxbit  .fill   15     # Fill maxbit
+maxbit  .fill   3     # Fill maxbit
 
 
 
