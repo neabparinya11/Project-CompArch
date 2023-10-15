@@ -19,7 +19,7 @@ class Simulator:
     def getMembin(self):
         mem = []
         Assembler = Asb.Assembler()
-        lstCode = Assembler.ReadFileText('textFile.txt')
+        lstCode = Assembler.ReadFileText('multi.txt')
 
         for ints in lstCode:
             mem.append(Assembler.convertInstruction(ints.line, ints.numbLine))
@@ -56,11 +56,13 @@ class Simulator:
         rs = int(inst[10:13],2)
         rd = int(inst[13:16],2)
         imm = int(inst[16:32],2)        
-
+        asb = Asb.Assembler()
         # print(type,rs,rd,imm)
 
         if opcode == "000":             # ADD
-            if(imm !=0):
+            if self.reg[rs] + self.reg[rd] >= 4294705152:
+                self.reg[imm] = -262144 #overflowError
+            elif(imm !=0):
                  self.reg[imm] = self.reg[rs] + self.reg[rd]
 
         elif opcode == "001":             # NAND
@@ -72,17 +74,16 @@ class Simulator:
                 self.reg[rd] = self.mem[self.reg[rs] + imm];
                 
         elif opcode == "011":             # SW
-                self.mem[self.reg[rs] + imm] = self.reg[rd];
+                self.mem[self.reg[rs] + imm] = self.reg[rd]
                 
         elif opcode == "100":             # BEQ
             if (self.reg[rs] == self.reg[rd]):
-                asb = Asb.Assembler()
                 self.pc += asb.BinaryToDecimal('{0:b}'.format(imm).zfill(16), 16)
                 
         elif opcode == "101":             # JARL
             if (rd != 0):
-                self.reg[rd] = self.pc;
-            self.pc = self.reg[rs];
+                self.reg[rd] = self.pc
+            self.pc = self.reg[rs]
                 
         elif opcode == "110":             # Halt
             # exit
@@ -96,52 +97,77 @@ class Simulator:
 
         
                 
-    def printState(self,pc,mem,reg):
+    def printState(self,pc,mem,reg, file):
+        
+        file.write("@@@\nstate:\n")
+        file.write("\tpc {}\n".format(pc))
+        file.write("\tmemory:\n")
+        
         print("@@@\nstate:")
-        print("\tpc ", pc)
+        print("\tpc {}".format(pc))
         print("\tmemory:")
-        printMemory(mem)
+        printMemory(mem, file)
+        
+        file.write("\tregisters:\n")
+        
         print("\tregisters:")      
-        printReg(reg)
+        printReg(reg, file)
+        
+        file.write("end state\n")
+        
         print("end state")
         print(" ")
+        
+        file.write(" \n")
 
     def output(self):
         print('The output of this program is :', self.reg[3])
 
     def display(self):
         Sim = Simulator()
+        file = open("result.txt", 'w')
         self.reset()
         for i in self.mem:
             print('memory[',self.mem.index(i),']=',i)
+            
+            file.write('Memory[{}]={}\n'.format(self.mem.index(i), i))
+            
         print('\t')
         print('\t')
-        Sim.printState(self.pc,self.mem,self.reg)
+        Sim.printState(self.pc,self.mem,self.reg, file)
+        file.write('\t')
+        file.write('\t')
 
+        
         while self.run:
             instruction = self.fetch()
             if instruction == 0:
                 break
             self.instType(instruction)
-            Sim.printState(self.pc,self.mem,self.reg)
-
+            Sim.printState(self.pc,self.mem,self.reg, file)
+        file.close()
         # print("machine halted")
         # print("total of ", Sim.stateCount ," instructions executed")
         # print("final state of machine:")
         # Sim.printState(self.pc,self.mem,self.reg)
 
 
-def printMemory(mem):
+def printMemory(mem, file):
     # print(mem)
     memCount = 0
     for i in mem:
         print ("\t\tmem[ ",memCount," ] ",i)
+        
+        file.write("\t\tmem[ {} ] {}\n".format(memCount, i))
+        
         memCount +=1
 
-def printReg(reg):
+def printReg(reg, file):
     # print(reg)
     for i in range (len(reg)):
         print ("\t\treg[ ",i," ] ",reg[i])
+        
+        file.write("\t\treg[ {} ] {}\n".format(i, reg[i]))
 
 
 
