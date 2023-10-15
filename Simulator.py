@@ -3,7 +3,7 @@ import Assembler as Asb
 class Simulator:
  
     run = True
-    max_StateCount = 500
+    max_StateCount = 2000
     stateCount = 0
     
     def __init__(self):
