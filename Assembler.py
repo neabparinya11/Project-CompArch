@@ -170,7 +170,7 @@ class Assembler:
             if int(listStr[2]) >= 0:
                 machineCode ='{0:b}'.format(int(listStr[2]))
             else:
-                machineCode = self.TwoComplementV2(int(listStr, 2), 32)
+                machineCode = self.TwoComplementV2(int(listStr[2], 2), 32)
                 # machineCode = listStr[2]
         else:
             machineCode = '{0:b}'.format(self.saveLabelAndAddress[listStr[2]])
