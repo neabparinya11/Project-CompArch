@@ -170,7 +170,6 @@ class Assembler:
             if int(listStr[2]) >= 0:
                 machineCode ='{0:b}'.format(int(listStr[2]))
             else:
-                print
                 machineCode = self.TwoComplementV2(int(listStr[2]), 32)
                 # machineCode = listStr[2]
         else:
@@ -204,7 +203,7 @@ class Assembler:
         add1 = int(flip_bits, 2) + 1
         return '{0:b}'.format(add1)
     
-    def ConvertTwoComplementToCecimal(self, numb:int, bits:int)->int:
+    def ConvertTwoComplementToDecimal(self, numb:int, bits:int)->int:
         two_complement = self.TwoComplement(numb, bits)
         if two_complement[0] == '1':
             return int(two_complement[1:bits], 2)*(-1)
@@ -250,8 +249,12 @@ class Pair:
         
 # Asb = Assembler()
 # two = Asb.TwoComplementV2(4294705152, 32)
+# print(two)
 # print(int(two, 2))
-# one = Asb.TwoComplementV2(int(two, 2), 32)
+# binarytodecimal = Asb.BinaryToDecimal(two, 32)
+# convert = Asb.ConvertTwoComplementToDecimal(int(two, 2), 32)
+# print(binarytodecimal)
+# print(convert)
 # print(Asb.ConvertTwoComplementToCecimal(int(one, 2), 32))
 # one = Asb.ConvertTwoComplementToCecimal(int(two, 2), 16)
 # print(one)
