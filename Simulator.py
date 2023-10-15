@@ -19,7 +19,7 @@ class Simulator:
     def getMembin(self):
         mem = []
         Assembler = Asb.Assembler()
-        lstCode = Assembler.ReadFileText('multi.txt')
+        lstCode = Assembler.ReadFileText('combination.txt')
 
         for ints in lstCode:
             mem.append(Assembler.convertInstruction(ints.line, ints.numbLine))
@@ -74,7 +74,11 @@ class Simulator:
                 self.reg[rd] = self.mem[self.reg[rs] + imm];
                 
         elif opcode == "011":             # SW
-                self.mem[self.reg[rs] + imm] = self.reg[rd]
+                print("rs :", rs, " rd :", rd, " im :", imm)
+                if self.reg[rs] + imm >= len(self.mem):
+                    self.mem.insert(self.reg[rs] + imm, self.reg[rd])
+                else:
+                    self.mem[self.reg[rs] + imm] = self.reg[rd]
                 
         elif opcode == "100":             # BEQ
             if (self.reg[rs] == self.reg[rd]):
