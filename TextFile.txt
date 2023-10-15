@@ -1,23 +1,45 @@
-        lw      0       1       input           #r1 = memory[input]
-        lw      0       4       subAdr          #prepare to call sub4n. r4=sub4n
-        jalr    4       7                       #call sub4n; r7=return address; r3=answer
-        halt
-sub4n   lw      0       6       pos1            #r6 = 1
-        sw      5       7       stack           #save return address on stack
-        add     5       6       5               #increment stack pointer
-        sw      5       1       stack           #save input on stack
-        add     5       6       5               #increment stack pointer
-        add     1       1       1               #compute 2*input
-        add     1       1       3               #compute 4*input into return value
-        lw      0       6       neg1            #r6 = -1
-        add     5       6       5               #decrement stack pointer
-        lw      5       1       stack           #recover original input
-        add     5       6       5               #decrement stack pointer
-        lw      5       7       stack           #recover original return address
-        jalr    7       4                       #return.         r4 is not restored.
-pos1    .fill   1
-neg1    .fill   -1
-subAdr  .fill   sub4n                           #contains the address of sub4n
-input   .fill   10                              #input = 10
-stack   .fill   0                               #beginning of stack (value is irrelevant)
-stack1  .fill   0                               #lets us see stack+1 in simulation
+        lw      0       1       valN            loads n's and r's value
+        lw      0       2       valR
+        lw      0       6       cbAdIn          loads combination's addr
+        lw      0       4       one             loads +1
+        jalr    6       7                       go to the function
+stoppu  halt
+comIni  sw      5       7       stack           saves return addr
+        add     4       5       5
+        sw      5       2       stack           saves r
+        add     4       5       5
+        sw      5       1       stack           saves n
+        add     4       5       5
+combIf  beq     1       2       comRtn          |if r = 0 or n = r
+        beq     0       2       comRtn          |if all these condition do not satisfy, go below            
+cbFail  lw      0       6       lobOne          loads -1 to do n--
+        add     6       1       1               n--
+        lw      0       6       cbAdIn          saves an addr before doing recursion
+        jalr    6       7                       goes back to comIni
+        add     6       5       5               * pops to get n
+        lw      5       1       stack           loads n back
+        add     6       1       1               n--
+        add     6       5       5               * pops to get r
+        lw      5       2       stack           loads r back
+        add     6       2       2               r--
+        lw      0       6       cbAdIn          
+        add     4       5       5               $5+=2
+        add     4       5       5                
+        jalr    6       7
+        lw      0       6       cbAdPo
+        jalr    6       7       
+comRtn  add     4       3       3               $3++        
+comPop  lw      0       6       lobOne
+        add     6       5       5               pop all lol
+        add     6       5       5               
+        add     6       5       5               
+        lw      5       7       stack
+        jalr    7       0
+cbAdIn  .fill   comIni                          combination's addr
+cbAdPo  .fill   comPop                          combination's addr - pop section
+cbAdRt  .fill   comRtn                          combination's addr - base case return
+one     .fill   1                               used for test case and increment
+lobOne  .fill   -1                              used for decrement
+valN    .fill   7                               
+valR    .fill   3  
+stack   .fill   0                               exits to keep a number here, be it an addr or actual val

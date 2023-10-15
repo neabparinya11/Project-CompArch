@@ -1,6 +1,6 @@
             lw          0           1          valN             #load n
             lw          0           2          valR             #load r
-            lw          0           6          AdcbIn           #load function
+            lw          0           6          AdcbIn           #load 
             lw          0           4          one              #load 1
             jalr        6           7                      
 stop        halt
@@ -13,16 +13,19 @@ comInp      sw         5            7            stack          #save return add
 combiIF     beq        1            2            comRt          #if r = 0 or n = r jump comRt
             beq        0            2            comRt        
 combi-1     lw         0            6            neg1           #load -1  
-            add        6            1            1              #n-
+            add        6            1            neg1           #n-1
             lw         0            6            AdcbIn
             jalr       6            7
             add        6            5            5             
             lw         5            1            stack          #load n to stack
             add        6            1            1              #n--
+            add        6            5            5
             lw         5            2            stack          #load r to stack
             add        6            2            2              #r--
+            add        6            5            5
             lw         0            6            AdcbIn
             add        4            5            5
+            jalr       6            7
 comPop      lw         0            6            neg1           #load -1 
             add        6            5            5             
             add        6            5            5

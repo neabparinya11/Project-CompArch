@@ -1,0 +1,27 @@
+            lw          0           1           valN          #load n=7
+            lw          0           2           valR          #load r=3
+            lw          0           4           one           #load 1
+            lw          0           0           stack         
+            jalr        6           7                         #
+stop        halt
+combiI      sw          5           7           stack         #save 
+            add         4           5           5
+            sw          5           1           stack         #save n on stack
+            add         4           5           5
+            sw          5           2           stack         #save r on stack
+            add         4           5           5
+            beq         1           2           comRt
+            beq         0           2           comRt                      
+            add         
+comPop      lw          0           6           neg1
+            add         5           5           6
+            add         
+comRt       add         4           3           3              
+valN        .fill       7
+valR        .fill       3
+AdcbIn      .fill       comInp              #combination input
+AdcbRt      .fill       comRt               #combination return
+AdcbP       .fill       comPop              #combination pop
+one         .fill       1                   
+neg1        .fill       -1                  
+stack       .fill       0                  #beginning of stack (value is irrelevant)
