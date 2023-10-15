@@ -1,0 +1,8 @@
+ lw 0 1 num1 
+ lw 0 2 num2
+ add 1 2 3 
+ sw 4 3 result
+ halt
+ num1 .fill 5
+ num2 .fill 7
+ result .fill 0
