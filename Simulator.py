@@ -60,6 +60,7 @@ class Simulator:
         # print(type,rs,rd,imm)
 
         if opcode == "000":             # ADD
+            print(imm)
             if self.reg[rs] + self.reg[rd] >= 4294705152:
                 self.reg[imm] = -262144 #overflowError
             elif(imm !=0):
