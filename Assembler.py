@@ -93,7 +93,6 @@ class Assembler:
             result = self.OtypeInstruction(listStr)
         else:
             raise ValueError("Invalid opcode "+ listStr[1]+ " not have")
-            
         return result
     
     def ItypeInstruction(self, listStr, pc):
@@ -247,14 +246,10 @@ class Pair:
         self.line = line
         self.numbLine = numbLine
         
-# Asb = Assembler()
 # two = Asb.TwoComplementV2(4294705152, 32)
-# print(two)
 # print(int(two, 2))
-# binarytodecimal = Asb.BinaryToDecimal(two, 32)
-# convert = Asb.ConvertTwoComplementToDecimal(int(two, 2), 32)
+# binarytodecimal = Asb.BinaryToDecimal(~(6&6), 4)
 # print(binarytodecimal)
-# print(convert)
 # print(Asb.ConvertTwoComplementToCecimal(int(one, 2), 32))
 # one = Asb.ConvertTwoComplementToCecimal(int(two, 2), 16)
 # print(one)
