@@ -1,26 +1,30 @@
-        lw      0       2       mcand           # Load inputs
-        lw      0       3       mplier
-        lw      0       6       mulAdr          # Load mulIni's addr
-        jalr    6       7                       # CALL FN | Jump to mul, saving the return addr to $7
-        noop                                    # Placeholder lol
-done    halt
+        lw      0       2       mcand           # Load the value of mcand into register R2
+        lw      0       3       mplier          # Load the value of mplier into register R3
+        lw      0       6       mulAdr          # Load the value of mulAdr into register R6
+        jalr    6       7                       # Jump to the multiplication process at address stored in register R6 (mulAdr)
+        noop
+done    halt                                    # Halt the program
+mulIni  lw      0       6       maxItr          # Load the value of maxItr into register R6
+        lw      0       4       one             # Load the value of one into register R4 
 
-mulIni  lw      0       6       maxItr          # Start of multiplication algorithm
-        lw      0       4       one
-        
 
-mul     nand    4       3       5               # Check bits, starting from msb to lsb
-        nand    5       5       5
-        beq     5       0       1               # Check the condition if the msb is 1                     
-        add     2       1       1               # UPDATE LOOP | increment here
-        add     2       2       2               # Temp mcand
-        add     4       4       4               # Check the next bit of mplier
-        beq     4       6       1               # Go to jalr below once it is the 32nd iteration
-        beq     0       0       mul             # Go back to the loop otherwise
-        jalr    7       0                       # Return the final value, using $0 here means we are not going to save a return addr
+                                                # Calculate the result and check for termination
+mul     nand    4       3       5               # Calculate the bitwise NAND of the values in R4 and R3, and store the result in R5
+        nand    5       5       5               # Invert the value in R5 by performing a NAND operation between it and itself
+        beq     5       0       1               # If the result in R5 is zero, jump to the done step
 
-mulAdr  .fill   mulIni                          # Multiplier addr
-mcand   .fill   32766
-mplier  .fill   10383
-maxItr  .fill   -2147483648                              # A limit of how many iterations is allowed (we use the msb as the limit)
-one     .fill   1                               # For $4 and lsb check before shifting to the right
+                                                # Calculate multiplication and addition
+        add     2       1       1               # Add the value in R1 (result holder) with the value in R2 (mcand)
+        add     2       2       2               # Multiply the value in R2 (mcand) by 2 and store the result in R2
+        add     4       4       4               # Multiply the value in R4 (one) by 2 and store the result in R4
+        beq     4       6       1               # If the value in R4 is equal to the value in R6 (maxItr), jump to the done step
+        beq     0       0       mul             # If we have not yet reached the end of the multiplication, jump to the mul step
+        jalr    7       0                       # Jump to the address in R7 (mulAdr) and save the return address in R7
+
+done    halt                                    # Halt the program
+
+mulAdr  .fill   mulIni                          # Fill the address of mulIni into mulAdr
+mcand   .fill   32766                           # Fill the value 32766 (number to be multiplied)
+mplier  .fill   10383                           # Fill the value 10383 (multiplier)
+maxItr  .fill   -2147483648                     # Fill the value -2147483648 (number of iterations)
+one     .fill   1                               # Fill the value 1 (initial value of the multiplier)
