@@ -21,7 +21,7 @@ mul     nand    4       3       5               # Calculate the bitwise NAND of 
         beq     0       0       mul             # If we have not yet reached the end of the multiplication, jump to the mul step
         jalr    7       0                       # Jump to the address in R7 (mulAdr) and save the return address in R7
 
-done    halt                                    # Halt the program
+done    halt                                    # Halt  the program 
 
 mulAdr  .fill   mulIni                          # Fill the address of mulIni into mulAdr
 mcand   .fill   32766                           # Fill the value 32766 (number to be multiplied)
