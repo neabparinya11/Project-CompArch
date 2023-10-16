@@ -14,7 +14,7 @@ mul     nand    4       3       5               # Calculate the bitwise NAND of 
         beq     5       0       1               # If the result in R5 is zero, jump to the done step
 
                                                 # Calculate multiplication and addition
-        add     2       1       1               # Add the value in R1 (result holder) with the value in R2 (mcand)
+        add     1       2       1               # Add the value in R1 (result holder) with the value in R2 (mcand)
         add     2       2       2               # Multiply the value in R2 (mcand) by 2 and store the result in R2
         add     4       4       4               # Multiply the value in R4 (one) by 2 and store the result in R4
         beq     4       6       1               # If the value in R4 is equal to the value in R6 (maxItr), jump to the done step
